@@ -1,10 +1,30 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import { Button, Center } from '@mantine/core'
+
+import { useQuery } from '@/utils'
+import { CodeItem } from '@/models'
+import { GetCodeItemQueryVariables } from '@/graphql/types'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+  const { loading, error, request } = useQuery<CodeItem, GetCodeItemQueryVariables>({
+    query: 'getCodeItem',
+    variables: { itemCode: '123' },
+    settings: {
+      next(item) {
+        item.itemCode
+      },
+    },
+  })
+
+  const callMe = () => {
+    request().then((res) => {
+      res.data?.itemCode
+    })
+  }
+
   return (
     <>
       <Head>
@@ -13,7 +33,12 @@ export default function Home() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <main className={`${styles.main} ${inter.className}`}></main>
+
+      <Center w='100vw' h='100vh'>
+        <Button loading={loading} size='xl' onClick={request}>
+          Click me!
+        </Button>
+      </Center>
     </>
   )
 }

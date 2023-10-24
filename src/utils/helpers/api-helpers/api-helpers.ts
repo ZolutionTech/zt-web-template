@@ -1,25 +1,21 @@
 import { appState } from '@/state'
 import { API } from 'aws-amplify'
+import { GraphQLResult } from '@aws-amplify/api-graphql'
+import GraphQLAPI, { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql'
+
 import { DocumentNode } from 'graphql'
 import { Observable } from 'zen-observable-ts'
+import { GraphQLSettings } from '@/utils/hooks/useQuery/types'
+import { CodeItem } from '@/models'
+import { GetCodeItemQuery } from '@/graphql/types'
 
-export type APIResponse = {
+export type APIResponse<TData> = {
   status: number
-  data?: any
+  data?: TData | null
   error?: any
 }
 
-export type AuthModeType =
-  | 'API_KEY'
-  | 'AWS_IAM'
-  | 'OPENID_CONNECT'
-  | 'AMAZON_COGNITO_USER_POOLS'
-  | 'AWS_LAMBDA'
-  | undefined
-
-export type GraphQLSettings = {
-  withoutPagination?: boolean
-}
+export type AuthModeType = keyof typeof GRAPHQL_AUTH_MODE
 
 export type SubscriptionInput = {
   callback: (data: any, subscription: any) => void | Promise<void>
@@ -32,21 +28,21 @@ export type SubscriptionInput = {
 
 const { subscriptionsCache } = appState
 
-export const AppSyncHelper = async (
+export const AppSyncHelper = async <TData>(
   query: string | DocumentNode,
   variables?: any | undefined,
-  authMode: AuthModeType = 'AMAZON_COGNITO_USER_POOLS',
-  authToken: string | undefined = '',
-  settings?: GraphQLSettings
+  authMode?: AuthModeType,
+  authToken?: string | undefined,
+  settings?: GraphQLSettings<TData>
 ) => {
-  const result = (await API.graphql({
+  const result = (await API.graphql<TData>({
     query,
     variables,
     authMode,
     authToken,
   })) as {
     data: any
-    errors: any[]
+    errors?: any[]
   }
 
   const nextToken = result.data?.[Object.keys(result.data)?.[0]]?.nextToken

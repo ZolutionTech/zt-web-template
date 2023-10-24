@@ -1,37 +1,13 @@
-import { APITypes, Mutations, Queries } from '@/graphql'
+import { Mutations, Queries } from '@/graphql'
 import { appState } from '@/state'
-import { APIResponse, AppSyncHelper, AuthModeType, logDev, GraphQLSettings } from '@/utils'
+import { APIResponse, AppSyncHelper, logDev } from '@/utils'
 import { Auth, Storage } from 'aws-amplify'
 import { handleError } from '..'
-
-export type APIDefaultInput = {
-  authMode?: AuthModeType
-  setState?: (item: any) => void
-  settings?: GraphQLSettings
-  errorLogOptions?: Partial<APITypes.CreateErrorLogInput>
-}
-
-export type APIQueryInput = {
-  query: keyof typeof Queries
-  variables?: {
-    filter?: any
-    limit?: number | null
-    nextToken?: string | null
-    sortDirection?: APITypes.ModelSortDirection | null
-    [key: string]: any
-  }
-  quiet?: boolean // If true, not logging data
-} & APIDefaultInput
-
-export type APIMutationInput = {
-  mutation: keyof typeof Mutations
-  variables?: any
-  isAsync?: boolean
-} & APIDefaultInput
+import { APIQueryInput, APIMutationInput } from './types'
 
 const { isAuthenticated } = appState
 
-const APIService = {
+export const APIService = {
   async get(input: APIQueryInput): Promise<APIResponse> {
     const { variables, query, authMode, setState, errorLogOptions } = input
     try {
@@ -101,8 +77,6 @@ const APIService = {
     }
   },
 }
-
-export default APIService
 
 const handleFiles = async (variables: any) => {
   if (Boolean(variables.input)) {

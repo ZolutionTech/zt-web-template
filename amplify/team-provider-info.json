@@ -1,0 +1,20 @@
+{
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-digitaltwinmock-prod-151743-authRole",
+      "UnauthRoleArn": "arn:aws:iam::186873840600:role/amplify-digitaltwinmock-prod-151743-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::186873840600:role/amplify-digitaltwinmock-prod-151743-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-digitaltwinmock-prod-151743-deployment",
+      "UnauthRoleName": "amplify-digitaltwinmock-prod-151743-unauthRole",
+      "StackName": "amplify-digitaltwinmock-prod-151743",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:186873840600:stack/amplify-digitaltwinmock-prod-151743/9291c2c0-71a6-11ee-abff-06560c05bb02",
+      "AmplifyAppId": "d35vb4ipog8drk"
+    },
+    "categories": {
+      "api": {
+        "digitaltwinmock": {}
+      }
+    }
+  }
+}

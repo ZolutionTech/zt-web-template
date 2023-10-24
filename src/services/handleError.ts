@@ -1,14 +1,9 @@
-import { APITypes, Mutations } from '@/graphql'
 import { appState } from '@/state'
 import { AppSyncHelper, generateUUID } from '@/utils'
 
 const { sessionId } = appState
 
-export const handleError = async (
-  error: any,
-  functionName: string,
-  errorLogOptions?: Partial<APITypes.CreateErrorLogInput>
-) => {
+export const handleError = async (error: any, functionName: string, errorLogOptions?: any) => {
   if (!error) return { status: 400, error: 'An unknown error occurred', data: {} }
 
   let errorMessage = ''
@@ -29,32 +24,30 @@ export const handleError = async (
   const logMessage = `Error in ${functionName}: ${errorMessage}`
 
   try {
-    process.env.NODE_ENV !== 'development' && (await newErrorLog(logMessage, errorLogOptions))
+    // process.env.NODE_ENV !== 'development' && (await newErrorLog(logMessage, errorLogOptions))
   } catch (error) {
     console.log(error)
   }
 
-  console.log(logMessage)
-
   return { status: 400, error: errorMessage, data: {} }
 }
 
-export const newErrorLog = async (
-  errorMessage: string,
-  errorLogOptions?: Partial<APITypes.CreateErrorLogInput>
-) => {
-  const variables: APITypes.CreateErrorLogMutationVariables = {
-    input: {
-      sessionId: sessionId.get() || generateUUID(),
-      logId: generateUUID(),
-      message: errorMessage,
-      logType: APITypes.ErrorLogType.ADMIN,
-      severity: APITypes.ErrorSeverity.WARN,
-      ...errorLogOptions,
-    },
-  }
+// export const newErrorLog = async (
+//   errorMessage: string,
+//   errorLogOptions?: Partial<APITypes.CreateErrorLogInput>
+// ) => {
+//   const variables: APITypes.CreateErrorLogMutationVariables = {
+//     input: {
+//       sessionId: sessionId.get() || generateUUID(),
+//       logId: generateUUID(),
+//       message: errorMessage,
+//       logType: APITypes.ErrorLogType.ADMIN,
+//       severity: APITypes.ErrorSeverity.WARN,
+//       ...errorLogOptions,
+//     },
+//   }
 
-  const { data } = await AppSyncHelper(Mutations.createErrorLog, variables)
+//   const { data } = await AppSyncHelper(Mutations.createErrorLog, variables)
 
-  return data
-}
+//   return data
+// }
