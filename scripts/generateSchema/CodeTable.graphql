@@ -16,6 +16,8 @@ type CodeItem
   tableCode: String!
   itemCode: String!
 
+  internalName: String!
+
   isEditable: Boolean! @default(value: "true")
   isActive: Boolean! @default(value: "true")
 }

@@ -21,8 +21,12 @@ export const getCodeItem = /* GraphQL */ `query GetCodeItem(
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename
@@ -52,8 +56,12 @@ export const listCodeItems = /* GraphQL */ `query ListCodeItems(
       tenantCode
       tableCode
       itemCode
+      internalName
+      internalDescription
       isEditable
       isActive
+      isDisplayed
+      isExtended
       createdAt
       updatedAt
       __typename

@@ -1,18 +1,37 @@
-import { createTheme, MantineColorsTuple } from '@mantine/core'
+import { createTheme, MantineColorsTuple, DefaultMantineColor, Card } from '@mantine/core'
 
-const myColor: MantineColorsTuple = [
-  '#f2f0ff',
-  '#e0dff2',
-  '#bfbdde',
-  '#9b98ca',
-  '#7d79ba',
-  '#6a65b0',
-  '#605bac',
-  '#504c97',
-  '#464388',
-  '#3b3979',
+type ExtendedCustomColors = 'primary' | DefaultMantineColor
+
+const primary: MantineColorsTuple = [
+  '#ebefff',
+  '#d5dafc',
+  '#a9b1f1',
+  '#7b87e9',
+  '#5362e1',
+  '#3a4bdd',
+  '#2d3fdc',
+  '#1f32c4',
+  '#182cb0',
+  '#0b259c',
 ]
 
 export const theme = createTheme({
-  colors: { myColor },
+  colors: { primary },
+
+  primaryColor: 'primary',
+  components: {
+    // Card: Card.extend({
+    //   styles(themes, props, ctx) {
+    //     return {
+    //       root: {},
+    //     }
+    //   },
+    // }),
+  },
 })
+
+declare module '@mantine/core' {
+  export interface MantineThemeColorsOverride {
+    colors: Record<ExtendedCustomColors, MantineColorsTuple>
+  }
+}

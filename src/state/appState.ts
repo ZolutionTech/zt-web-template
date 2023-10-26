@@ -1,4 +1,3 @@
-import { APITypes } from '@/graphql'
 import { hookstate, useHookstate } from '@hookstate/core'
 
 const initialState = {

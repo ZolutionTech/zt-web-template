@@ -15,8 +15,15 @@ type CodeItem @model {
   tableCode: String!
   itemCode: String!
 
-  isEditable: Boolean! @default(value: "true")
+  internalName: String!
+  internalDescription: String
+
+  isEditable: Boolean! @default(value: "false")
   isActive: Boolean! @default(value: "true")
+  isDisplayed: Boolean @default(value: "true")
+  isExtended: Boolean @default(value: "false")
+
+  ## Extended fields
 }
 
 type LanguageItem @model {
@@ -27,8 +34,8 @@ type LanguageItem @model {
   #     { allow: groups, groups: ["TenantAdmin", "SuperAdmin"], operations: [read] }
   #   ]
   # )
-  languageCode: String! @primaryKey(sortKeyFields: ["tableCode", "itemCode"])
+  languageCode: String! @primaryKey(sortKeyFields: ["tableCode", "itemCode"]) # If tenant specific, <languageCode>#<tenantCode>
   tableCode: String!
   itemCode: String!
-  text: String
+  text: String!
 }

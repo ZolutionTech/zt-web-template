@@ -1,19 +1,10 @@
 import { appState } from '@/state'
 import { API } from 'aws-amplify'
-import { GraphQLResult } from '@aws-amplify/api-graphql'
-import GraphQLAPI, { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql'
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/api-graphql'
 
 import { DocumentNode } from 'graphql'
 import { Observable } from 'zen-observable-ts'
 import { GraphQLSettings } from '@/utils/hooks/useQuery/types'
-import { CodeItem } from '@/models'
-import { GetCodeItemQuery } from '@/graphql/types'
-
-export type APIResponse<TData> = {
-  status: number
-  data?: TData | null
-  error?: any
-}
 
 export type AuthModeType = keyof typeof GRAPHQL_AUTH_MODE
 

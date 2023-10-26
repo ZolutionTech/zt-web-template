@@ -16,8 +16,12 @@ export const createCodeItem = /* GraphQL */ `mutation CreateCodeItem(
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename
@@ -35,8 +39,12 @@ export const updateCodeItem = /* GraphQL */ `mutation UpdateCodeItem(
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename
@@ -54,8 +62,12 @@ export const deleteCodeItem = /* GraphQL */ `mutation DeleteCodeItem(
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename

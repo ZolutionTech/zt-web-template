@@ -13,8 +13,12 @@ export const onCreateCodeItem = /* GraphQL */ `subscription OnCreateCodeItem($fi
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename
@@ -29,8 +33,12 @@ export const onUpdateCodeItem = /* GraphQL */ `subscription OnUpdateCodeItem($fi
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename
@@ -45,8 +53,12 @@ export const onDeleteCodeItem = /* GraphQL */ `subscription OnDeleteCodeItem($fi
     tenantCode
     tableCode
     itemCode
+    internalName
+    internalDescription
     isEditable
     isActive
+    isDisplayed
+    isExtended
     createdAt
     updatedAt
     __typename

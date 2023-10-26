@@ -15,37 +15,13 @@ export type GraphQLSettings<TData> = {
 
 export type APIQueryInput<TData, TVariables> = {
   query: QueryName
-  variables?: TVariables
+  variables: TVariables
   authMode?: AuthModeType
   settings?: GraphQLSettings<TData>
 }
 
-export type APIQueryResult<TQuery extends QueryName> = {
-  data: QueryResult[TQuery]
+export type APIResponse<TData> = {
+  status: number
+  data?: TData | null
+  error?: any
 }
-
-type QueryResult = {
-  [key: string]: {
-    __typename: string
-    items: Array<any>
-    nextToken?: string | null
-  } | null
-}
-
-// export type APIQueryInput = {
-//   query: keyof typeof queries
-//   variables?: {
-//     filter?: any
-//     limit?: number | null
-//     nextToken?: string | null
-//     sortDirection?: queries.APITypes.ModelSortDirection | null
-//     [key: string]: any
-//   }
-//   quiet?: boolean // If true, not logging data
-// } & APIDefaultInput
-
-// export type APIMutationInput = {
-//   mutation: keyof typeof Mutations
-//   variables?: any
-//   isAsync?: boolean
-// } & APIDefaultInput

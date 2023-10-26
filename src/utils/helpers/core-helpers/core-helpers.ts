@@ -1,3 +1,5 @@
+import { ImmutableArray, ImmutableObject, State } from '@hookstate/core'
+
 export const generateUUID = () => {
   // Generate uniqe key
   const S4 = () => {
@@ -21,7 +23,7 @@ export const getInitials = (name: string): string => {
   return initials
 }
 
-export const parseState = (state: any) => {
+export const parseState = <T>(state: T | ImmutableObject<T> | ImmutableArray<T> | null): T => {
   return state ? JSON.parse(JSON.stringify(state)) : state
 }
 

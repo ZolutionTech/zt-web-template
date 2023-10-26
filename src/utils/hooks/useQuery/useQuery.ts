@@ -1,8 +1,8 @@
 import { useHookstate } from '@hookstate/core'
 import * as GraphQL from '@/graphql'
 
-import { APIResponse, AppSyncHelper, logDev, useIsMounted } from '@/utils'
-import { APIQueryInput } from './types'
+import { AppSyncHelper, logDev, useIsMounted } from '@/utils'
+import { APIQueryInput, APIResponse } from './types'
 import { handleError } from '@/services'
 import { Auth } from 'aws-amplify'
 

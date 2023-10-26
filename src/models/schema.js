@@ -24,6 +24,20 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "internalName": {
+                    "name": "internalName",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "description": {
+                    "name": "description",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "isEditable": {
                     "name": "isEditable",
                     "isArray": false,
@@ -102,7 +116,7 @@ export const schema = {
                     "name": "text",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": []
                 },
                 "createdAt": {
@@ -145,5 +159,5 @@ export const schema = {
     "enums": {},
     "nonModels": {},
     "codegenVersion": "3.4.4",
-    "version": "1b4d734025f8ad8394d8a104377fe9c6"
+    "version": "a7e26fe769800f889cebc5fb70e8177d"
 };

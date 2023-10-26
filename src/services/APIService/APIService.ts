@@ -1,81 +1,58 @@
-import { Mutations, Queries } from '@/graphql'
 import { appState } from '@/state'
-import { APIResponse, AppSyncHelper, logDev } from '@/utils'
 import { Auth, Storage } from 'aws-amplify'
-import { handleError } from '..'
-import { APIQueryInput, APIMutationInput } from './types'
 
 const { isAuthenticated } = appState
 
 export const APIService = {
-  async get(input: APIQueryInput): Promise<APIResponse> {
-    const { variables, query, authMode, setState, errorLogOptions } = input
-    try {
-      const { data } = await AppSyncHelper(Queries[query], variables, authMode)
-
-      const item = data[query]
-
-      setState && setState(item)
-
-      return { status: 200, data: item }
-    } catch (error) {
-      return await handleError(error, query, errorLogOptions)
-    }
-  },
-
-  async list(input: APIQueryInput, isMounted?: () => boolean): Promise<APIResponse> {
-    let { variables, query, authMode, setState, errorLogOptions, settings } = input
-
-    try {
-      authMode ||= (await Auth.currentAuthenticatedUser()) && 'AMAZON_COGNITO_USER_POOLS'
-    } catch (error) {
-      authMode ||= 'AWS_IAM'
-    }
-
-    logDev(query, ': authMode: ', authMode)
-
-    try {
-      const { data } = await AppSyncHelper(Queries[query], variables, authMode, '', settings)
-
-      const { items } = data[query]
-
-      if (isMounted && !isMounted()) return { status: 200, data: [] }
-
-      setState && setState(items)
-
-      return { status: 200, data: items || [], nextToken: data[query].nextToken }
-    } catch (error) {
-      return await handleError(error, query, errorLogOptions)
-    }
-  },
-
-  async mutation(input: APIMutationInput): Promise<APIResponse> {
-    const { variables, mutation, authMode, setState, isAsync, errorLogOptions } = input
-    try {
-      let params = await handleFiles(variables)
-      params = removeTypenameKeys(params)
-
-      if (isAsync) {
-        // TODO: Add subscriptions
-        AppSyncHelper(Mutations[mutation], params, authMode)
-
-        return { status: 200, data: null }
-      }
-
-      const { data } = await AppSyncHelper(Mutations[mutation], params, authMode)
-
-      const item = data[mutation]
-
-      logDev(`${mutation} data: `, item)
-
-      setState && setState(item)
-
-      return { status: 200, data: item }
-    } catch (error) {
-      logDev('Input:', input.variables)
-      return await handleError(error, mutation, errorLogOptions)
-    }
-  },
+  // async get(input: APIQueryInput): Promise<APIResponse> {
+  //   const { variables, query, authMode, setState, errorLogOptions } = input
+  //   try {
+  //     const { data } = await AppSyncHelper(Queries[query], variables, authMode)
+  //     const item = data[query]
+  //     setState && setState(item)
+  //     return { status: 200, data: item }
+  //   } catch (error) {
+  //     return await handleError(error, query, errorLogOptions)
+  //   }
+  // },
+  // async list(input: APIQueryInput, isMounted?: () => boolean): Promise<APIResponse> {
+  //   let { variables, query, authMode, setState, errorLogOptions, settings } = input
+  //   try {
+  //     authMode ||= (await Auth.currentAuthenticatedUser()) && 'AMAZON_COGNITO_USER_POOLS'
+  //   } catch (error) {
+  //     authMode ||= 'AWS_IAM'
+  //   }
+  //   logDev(query, ': authMode: ', authMode)
+  //   try {
+  //     const { data } = await AppSyncHelper(Queries[query], variables, authMode, '', settings)
+  //     const { items } = data[query]
+  //     if (isMounted && !isMounted()) return { status: 200, data: [] }
+  //     setState && setState(items)
+  //     return { status: 200, data: items || [], nextToken: data[query].nextToken }
+  //   } catch (error) {
+  //     return await handleError(error, query, errorLogOptions)
+  //   }
+  // },
+  // async mutation(input: APIMutationInput): Promise<APIResponse> {
+  //   const { variables, mutation, authMode, setState, isAsync, errorLogOptions } = input
+  //   try {
+  //     let params = await handleFiles(variables)
+  //     params = removeTypenameKeys(params)
+  //     if (isAsync) {
+  //       // TODO: Add subscriptions
+  //       AppSyncHelper(Mutations[mutation], params, authMode)
+  //       return { status: 200, data: null }
+  //     }
+  //     const { data } = await AppSyncHelper(Mutations[mutation], params, authMode)
+  //     const item = data[mutation]
+  //     logDev(`${mutation} data: `, item)
+  //     setState && setState(item)
+  //     return { status: 200, data: item }
+  //   } catch (error) {
+  //     logDev('Input:', input.variables)
+  //     return await handleError(error, mutation, errorLogOptions)
+  //   }
+  // },
 }
 
 const handleFiles = async (variables: any) => {

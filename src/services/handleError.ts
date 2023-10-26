@@ -1,10 +1,11 @@
 import { appState } from '@/state'
-import { AppSyncHelper, generateUUID } from '@/utils'
+import { AppSyncHelper, generateUUID, logDev } from '@/utils'
+import { log } from 'console'
 
 const { sessionId } = appState
 
 export const handleError = async (error: any, functionName: string, errorLogOptions?: any) => {
-  if (!error) return { status: 400, error: 'An unknown error occurred', data: {} }
+  if (!error) return { status: 400, error: 'An unknown error occurred', data: null }
 
   let errorMessage = ''
   switch (true) {
@@ -22,6 +23,7 @@ export const handleError = async (error: any, functionName: string, errorLogOpti
   }
 
   const logMessage = `Error in ${functionName}: ${errorMessage}`
+  logDev(logMessage)
 
   try {
     // process.env.NODE_ENV !== 'development' && (await newErrorLog(logMessage, errorLogOptions))
@@ -29,7 +31,7 @@ export const handleError = async (error: any, functionName: string, errorLogOpti
     console.log(error)
   }
 
-  return { status: 400, error: errorMessage, data: {} }
+  return { status: 400, error: errorMessage, data: null }
 }
 
 // export const newErrorLog = async (
