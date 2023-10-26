@@ -23,5 +23,5 @@ export type APIQueryInput<TData, TVariables> = {
 export type APIResponse<TData> = {
   status: number
   data?: TData | null
-  error?: any
+  error?: string
 }

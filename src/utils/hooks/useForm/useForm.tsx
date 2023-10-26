@@ -72,7 +72,12 @@ export const useForm = ({ fields, initialValues }: Props) => {
   const reinitializeForm = useCallback(
     (values?: any, specificValues?: any) => {
       if (!values) {
-        form.setValues(generateInitialValues())
+        if (specificValues) {
+          form.setValues(specificValues)
+        } else {
+          form.setValues(generateInitialValues())
+        }
+
         form.resetDirty()
         return
       }
@@ -80,8 +85,6 @@ export const useForm = ({ fields, initialValues }: Props) => {
       const valuesToSet = Object.fromEntries(
         Object.entries(values).filter(([key]) => fields.some((field) => field.key === key))
       )
-
-      console.log({ ...valuesToSet, ...(specificValues || {}) })
 
       form.setValues({ ...valuesToSet, ...(specificValues || {}) })
       form.resetDirty()

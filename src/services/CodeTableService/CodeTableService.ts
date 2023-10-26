@@ -1,4 +1,4 @@
-import { createCodeItem, listCodeItems, updateCodeItem } from '@/graphql'
+import { createCodeItem, deleteCodeItem, listCodeItems, updateCodeItem } from '@/graphql'
 import { AppSyncHelper, APIResponse } from '@/utils'
 import { ParsedCodeTable } from './types'
 import { CodeItem, LanguageItem } from '@/models'
@@ -71,31 +71,56 @@ export const CodeTableService = {
     }
   },
 
-  //   async updateItem(input: UpdateCodeItemInput): Promise<APIResponse> {
-  //     console.log(input)
-  //     try {
-  //       const params: UpdateCodeItemMutationVariables = {
-  //         input: {
-  //           ...input,
-  //         },
-  //       }
+  async updateItem(input: UpdateCodeItemInput): Promise<APIResponse<CodeItem>> {
+    console.log(input)
+    try {
+      const params: UpdateCodeItemMutationVariables = {
+        input: {
+          ...input,
+        },
+      }
 
-  //       const { data } = (await AppSyncHelper(updateCodeItem, params)) as {
-  //         data: UpdateCodeItemMutation
-  //         errors: any[]
-  //       }
+      const { data } = (await AppSyncHelper(updateCodeItem, params)) as {
+        data: UpdateCodeItemMutation
+        errors: any[]
+      }
 
-  //       const codeItem = data.updateCodeItem
+      const codeItem = data.updateCodeItem
 
-  //       if (codeItem) {
-  //         mergeItemInCodeTable(codeItem)
-  //       }
+      if (codeItem) {
+        mergeItemInCodeTable(codeItem)
+      }
 
-  //       return { status: 200, data: codeItem }
-  //     } catch (error) {
-  //       return handleError(error, 'CodeTableService.updateItem')
-  //     }
-  //   },
+      return { status: 200, data: codeItem }
+    } catch (error) {
+      return handleError(error, 'CodeTableService.updateItem')
+    }
+  },
+
+  async deleteItem(input: DeleteCodeItemInput): Promise<APIResponse<CodeItem>> {
+    try {
+      const params: DeleteCodeItemMutationVariables = {
+        input: {
+          ...input,
+        },
+      }
+
+      const { data } = (await AppSyncHelper(deleteCodeItem, params)) as {
+        data: DeleteCodeItemMutation
+        errors: any[]
+      }
+
+      const codeItem = data.deleteCodeItem
+
+      if (codeItem) {
+        removeItemInCodeTable(codeItem)
+      }
+
+      return { status: 200, data: codeItem }
+    } catch (error) {
+      return handleError(error, 'CodeTableService.deleteItem')
+    }
+  },
 
   //   generateItemCode(name: string) {
   //     return name
@@ -118,6 +143,13 @@ const parseCodeTableToHashMap = (codeTableItems: (CodeItem | null)[]): ParsedCod
     if (cur.tableCode === 'TACO' && !acc[cur.itemCode]) {
       //
       acc[cur.itemCode] = {}
+      acc['TACO'] = {
+        ...acc['TACO'],
+        [cur.itemCode]: {
+          ...cur,
+          label: { EN: cur.internalName },
+        },
+      }
     } else if (acc[cur.tableCode]) {
       acc[cur.tableCode][cur.itemCode] = {
         ...cur,

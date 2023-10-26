@@ -7,6 +7,7 @@ import { useCodeTable } from '@/state'
 import { parseState, useForm } from '@/utils'
 import { CodeTableModalProps } from './types'
 import { FormField, FormFieldMetaType } from '@/components'
+import { notifications } from '@mantine/notifications'
 
 const CodeTableModal = ({ modalState, onClose }: CodeTableModalProps) => {
   const { isOpen, selectedCodeItem, selectedTableCode, isEdit } = modalState
@@ -21,7 +22,7 @@ const CodeTableModal = ({ modalState, onClose }: CodeTableModalProps) => {
     {
       key: 'itemCode',
       label: 'Item Code',
-      props: { disabled: isEdit ? true : false },
+      props: { disabled: isEdit.value ? true : false },
     },
     {
       key: 'internalName',
@@ -32,7 +33,7 @@ const CodeTableModal = ({ modalState, onClose }: CodeTableModalProps) => {
   const { form, reinitializeForm } = useForm({
     fields,
     initialValues: isEdit.get()
-      ? selectedTableCode
+      ? selectedCodeItem.value!
       : {
           tableCode: selectedTableCode.get(),
         },
@@ -40,7 +41,7 @@ const CodeTableModal = ({ modalState, onClose }: CodeTableModalProps) => {
 
   useEffect(() => {
     initializeForm()
-  }, [selectedCodeItem.value])
+  }, [selectedTableCode.value, selectedCodeItem.value])
 
   const initializeForm = () => {
     if (isEdit.get()) {
@@ -63,22 +64,59 @@ const CodeTableModal = ({ modalState, onClose }: CodeTableModalProps) => {
       ...form.values,
     }
 
-    console.log(input)
-
     loading.set(true)
     const { data, status, error } = await CodeTableService.createItem(input)
     loading.set(false)
 
-    if (status === 200) {
-      console.log(data)
+    if (data && status === 200) {
+      notifications.show({
+        title: 'Success',
+        message: `Code Item ${data.itemCode} created`,
+        color: 'teal',
+      })
+
+      isEdit.set(true)
+      reinitializeForm(data)
       //   handleClose()
+    } else {
+      notifications.show({
+        title: 'Error',
+        message: error ?? 'Something went wrong',
+        color: 'red',
+      })
     }
   }
 
-  const updateItem = async () => {}
+  const updateItem = async () => {
+    if (form.validate().hasErrors) return
+
+    const input = {
+      tenantCode: '_',
+      ...form.values,
+    }
+
+    loading.set(true)
+    const { data, status, error } = await CodeTableService.updateItem(input)
+    loading.set(false)
+
+    if (data && status === 200) {
+      notifications.show({
+        title: 'Success',
+        message: `Code Item ${data.itemCode} updated`,
+        color: 'teal',
+      })
+    } else {
+      notifications.show({
+        title: 'Error',
+        message: error ?? 'Something went wrong',
+        color: 'red',
+      })
+    }
+  }
 
   const handleClose = () => {
     onClose?.()
+    form.reset()
     isOpen.set(false)
   }
 
@@ -110,7 +148,7 @@ const CodeTableModal = ({ modalState, onClose }: CodeTableModalProps) => {
                       handleClose()
                     }}
                   >
-                    Cancel
+                    Close
                   </Button>
                   <Button
                     loading={loading.get()}

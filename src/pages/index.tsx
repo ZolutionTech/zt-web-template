@@ -1,4 +1,14 @@
-import { Badge, Button, Card, Group, Select, Stack, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  Card,
+  Group,
+  Select,
+  Stack,
+  TextInput,
+  Title,
+} from '@mantine/core'
 
 import { useHookstate } from '@hookstate/core'
 import { CodeTableService } from '@/services'
@@ -9,12 +19,16 @@ import CodeTableModal from '@/layout/CodeTableModal/CodeTableModal'
 import { CodeItem } from '@/models'
 import { ItemTableHeader } from '@/components/core/ItemTable/types'
 import { parseState } from '@/utils'
+import { IconTrash } from '@tabler/icons-react'
+import { modals } from '@mantine/modals'
+import { notifications } from '@mantine/notifications'
 
 const headers: ItemTableHeader<CodeItem>[] = [
   {
     key: 'internalName',
     label: 'Internal Name',
     searchable: true,
+    sortable: true,
   },
 
   {
@@ -29,6 +43,14 @@ const headers: ItemTableHeader<CodeItem>[] = [
     sortable: true,
     render(item) {
       return <Badge variant='light'>{item.isEditable ? 'No' : 'Yes'}</Badge>
+    },
+  },
+  {
+    key: 'actions',
+    label: 'Actions',
+    style: { width: 80 },
+    render(item) {
+      return <DeleteButton item={item} />
     },
   },
 ]
@@ -46,13 +68,12 @@ export default function Home() {
   })
 
   useEffect(() => {
-    Object.keys(codeTable.get()).length === 0 && init()
+    Object.values(codeTable.get()['TACO']).length === 0 && init()
   }, [])
 
   const init = async () => {
     loading.set(true)
     await CodeTableService.initialize()
-    console.log(Object.values(codeTable.get()))
 
     loading.set(false)
   }
@@ -117,6 +138,7 @@ export default function Home() {
           }
           onRefresh={init}
           isLoading={loading.get()}
+          initialSort={{ key: 'internalName', order: 'asc' }}
           onRowClick={(item) =>
             modalState.set({
               isOpen: true,
@@ -128,5 +150,76 @@ export default function Home() {
         />
       </Card>
     </Stack>
+  )
+}
+
+const DeleteButton = ({ item }: { item: CodeItem }) => {
+  const loading = useHookstate(false)
+  const confirmInput = useHookstate('')
+
+  const onDelete = async () => {
+    loading.set(true)
+
+    const { status, error, data } = await CodeTableService.deleteItem({
+      tenantCode: '_',
+      tableCode: item.tableCode,
+      itemCode: item.itemCode,
+    })
+
+    loading.set(false)
+
+    if (status === 200 && data) {
+      modals.closeAll()
+      notifications.show({
+        title: 'Success',
+        message: `Code Item ${data.itemCode} deleted`,
+        color: 'teal',
+      })
+    } else {
+      notifications.show({
+        title: 'Error',
+        message: error ?? 'Something went wrong',
+        color: 'red',
+      })
+    }
+  }
+
+  const openConfirmModal = () => {
+    modals.open({
+      title: 'Subscribe to newsletter',
+      children: (
+        <>
+          <TextInput
+            label='Write "confirm"'
+            value={confirmInput.get()}
+            onChange={(event) => confirmInput.set(event.currentTarget.value)}
+            data-autofocus
+          />
+          <Group wrap='nowrap'>
+            <Button loading={loading.get()} fullWidth onClick={() => modals.closeAll()} mt='md'>
+              Cancel
+            </Button>
+            <Button loading={loading.get()} fullWidth onClick={onDelete} mt='md'>
+              Delete
+            </Button>
+          </Group>
+        </>
+      ),
+    })
+  }
+
+  return (
+    <Button
+      onClick={(event) => {
+        event.stopPropagation()
+        openConfirmModal()
+      }}
+      loading={loading.get()}
+      variant='light'
+      color='red'
+      size='xs'
+    >
+      <IconTrash strokeWidth={1.5} />
+    </Button>
   )
 }

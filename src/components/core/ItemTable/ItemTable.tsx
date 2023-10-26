@@ -94,7 +94,7 @@ const TableHeader = <T extends { [key: string]: any }>({
             </Table.Th>
           )
         })}
-        <th style={{ width: 40 }} />
+        {/* <th style={{ width: 40 }} /> */}
       </Table.Tr>
     </Table.Thead>
   )

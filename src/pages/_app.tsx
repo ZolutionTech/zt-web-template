@@ -1,9 +1,13 @@
 import '@mantine/core/styles.css'
+import '@mantine/notifications/styles.css'
+
 import Head from 'next/head'
 import { MantineProvider, ColorSchemeScript, AppShell, Code, Button, Center } from '@mantine/core'
 import { Amplify } from 'aws-amplify'
 import { theme } from '@/constants'
 import awsConfig from '@/aws-exports'
+import { Notifications } from '@mantine/notifications'
+import { ModalsProvider } from '@mantine/modals'
 
 Amplify.configure(awsConfig)
 
@@ -19,21 +23,24 @@ export default function App({ Component, pageProps }: any) {
           <link rel='icon' href='/favicon.ico' />
         </Head>
 
-        <AppShell
-          padding='md'
-          header={{
-            height: 60,
-          }}
-        >
-          <AppShell.Header>
-            <Center h='100%'>
-              <Code>Data Table System v.1.0.0</Code>
-            </Center>
-          </AppShell.Header>
-          <AppShell.Main>
-            <Component {...pageProps} />
-          </AppShell.Main>
-        </AppShell>
+        <Notifications position='top-right' />
+        <ModalsProvider>
+          <AppShell
+            padding='md'
+            header={{
+              height: 60,
+            }}
+          >
+            <AppShell.Header>
+              <Center h='100%'>
+                <Code>Data Table System v.1.0.0</Code>
+              </Center>
+            </AppShell.Header>
+            <AppShell.Main>
+              <Component {...pageProps} />
+            </AppShell.Main>
+          </AppShell>
+        </ModalsProvider>
       </MantineProvider>
     </>
   )
