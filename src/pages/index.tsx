@@ -1,26 +1,15 @@
-import {
-  ActionIcon,
-  Badge,
-  Button,
-  Card,
-  Group,
-  Select,
-  Stack,
-  TextInput,
-  Title,
-} from '@mantine/core'
+import { Badge, Button, Card, Group, Select, Stack, Title } from '@mantine/core'
 
 import { useHookstate } from '@hookstate/core'
 import { CodeTableService } from '@/services'
 import { useCodeTable } from '@/state'
-import { useEffect } from 'react'
-import { ItemTable } from '@/components'
+import React, { useEffect } from 'react'
+import { ConfirmModal, ItemTable } from '@/components'
 import CodeTableModal from '@/layout/CodeTableModal/CodeTableModal'
 import { CodeItem } from '@/models'
 import { ItemTableHeader } from '@/components/core/ItemTable/types'
 import { parseState } from '@/utils'
 import { IconTrash } from '@tabler/icons-react'
-import { modals } from '@mantine/modals'
 import { notifications } from '@mantine/notifications'
 
 const headers: ItemTableHeader<CodeItem>[] = [
@@ -82,9 +71,12 @@ export default function Home() {
     <Stack>
       <CodeTableModal modalState={modalState} />
 
-      <Title order={4}>Create, Update, Delete af Code Items</Title>
-      <Title order={4}>Forbind Language</Title>
-      <Title order={4}>Language oversigter, forskellige filtrering osv. IKKE POC</Title>
+      <Card withBorder>
+        <Stack>
+          <Title order={2}>TO DOs</Title>
+          <Title order={5}>- Language oversigter, forskellige filtrering osv. IKKE POC</Title>
+        </Stack>
+      </Card>
 
       <Group align='flex-end' wrap='nowrap'>
         <Select
@@ -154,11 +146,18 @@ export default function Home() {
 }
 
 const DeleteButton = ({ item }: { item: CodeItem }) => {
-  const loading = useHookstate(false)
-  const confirmInput = useHookstate('')
+  const openConfirmModal = useHookstate(false)
 
   const onDelete = async () => {
-    loading.set(true)
+    if (item.tableCode == 'TACO') {
+      notifications.show({
+        title: 'Error',
+        message: 'Only system managers can delete Table Codes.',
+        color: 'red',
+      })
+
+      return
+    }
 
     const { status, error, data } = await CodeTableService.deleteItem({
       tenantCode: '_',
@@ -166,10 +165,7 @@ const DeleteButton = ({ item }: { item: CodeItem }) => {
       itemCode: item.itemCode,
     })
 
-    loading.set(false)
-
     if (status === 200 && data) {
-      modals.closeAll()
       notifications.show({
         title: 'Success',
         message: `Code Item ${data.itemCode} deleted`,
@@ -184,42 +180,20 @@ const DeleteButton = ({ item }: { item: CodeItem }) => {
     }
   }
 
-  const openConfirmModal = () => {
-    modals.open({
-      title: 'Subscribe to newsletter',
-      children: (
-        <>
-          <TextInput
-            label='Write "confirm"'
-            value={confirmInput.get()}
-            onChange={(event) => confirmInput.set(event.currentTarget.value)}
-            data-autofocus
-          />
-          <Group wrap='nowrap'>
-            <Button loading={loading.get()} fullWidth onClick={() => modals.closeAll()} mt='md'>
-              Cancel
-            </Button>
-            <Button loading={loading.get()} fullWidth onClick={onDelete} mt='md'>
-              Delete
-            </Button>
-          </Group>
-        </>
-      ),
-    })
-  }
-
   return (
-    <Button
-      onClick={(event) => {
-        event.stopPropagation()
-        openConfirmModal()
-      }}
-      loading={loading.get()}
-      variant='light'
-      color='red'
-      size='xs'
-    >
-      <IconTrash strokeWidth={1.5} />
-    </Button>
+    <div onClick={(e) => e.stopPropagation()}>
+      <Button
+        onClick={() => {
+          openConfirmModal.set(true)
+        }}
+        variant='light'
+        color='red'
+        size='xs'
+      >
+        <IconTrash strokeWidth={1.5} />
+      </Button>
+
+      <ConfirmModal isOpen={openConfirmModal} onConfirm={onDelete} withConfirmCode />
+    </div>
   )
 }

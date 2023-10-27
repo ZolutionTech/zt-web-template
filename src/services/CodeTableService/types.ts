@@ -4,8 +4,10 @@ type CodeItemTranslations = {
   [key: string]: string // EN: 'Hello', FR: 'Bonjour'
 }
 
+export type ParsedCodeItem = CodeItem & { label?: CodeItemTranslations }
+
 export type ParsedCodeTable = {
   [key: string]: {
-    [key: string]: CodeItem & { label?: CodeItemTranslations }
+    [key: string]: ParsedCodeItem
   }
 }

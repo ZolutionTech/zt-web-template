@@ -24,23 +24,21 @@ export default function App({ Component, pageProps }: any) {
         </Head>
 
         <Notifications position='top-right' />
-        <ModalsProvider>
-          <AppShell
-            padding='md'
-            header={{
-              height: 60,
-            }}
-          >
-            <AppShell.Header>
-              <Center h='100%'>
-                <Code>Data Table System v.1.0.0</Code>
-              </Center>
-            </AppShell.Header>
-            <AppShell.Main>
-              <Component {...pageProps} />
-            </AppShell.Main>
-          </AppShell>
-        </ModalsProvider>
+        <AppShell
+          padding='md'
+          header={{
+            height: 60,
+          }}
+        >
+          <AppShell.Header>
+            <Center h='100%'>
+              <Code>Data Table System v.1.0.0</Code>
+            </Center>
+          </AppShell.Header>
+          <AppShell.Main>
+            <Component {...pageProps} />
+          </AppShell.Main>
+        </AppShell>
       </MantineProvider>
     </>
   )

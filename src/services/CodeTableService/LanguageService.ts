@@ -2,7 +2,12 @@ import { none } from '@hookstate/core'
 
 import { handleError } from '..'
 import { AppSyncHelper, logDev, APIResponse } from '@/utils'
-import { createLanguageItem, listLanguageItems } from '@/graphql'
+import {
+  createLanguageItem,
+  deleteLanguageItem,
+  listLanguageItems,
+  updateLanguageItem,
+} from '@/graphql'
 import { codeTableState } from '@/state'
 import { LanguageItem } from '@/models'
 
@@ -26,7 +31,7 @@ export const LanguageService = {
     }
   },
 
-  async createItem(input: CreateLanguageInput): Promise<APIResponse<LanguageItem>> {
+  async create(input: CreateLanguageInput): Promise<APIResponse<LanguageItem>> {
     try {
       const { data } = (await AppSyncHelper(createLanguageItem, { input })) as {
         data: CreateLanguageItemMutation
@@ -41,51 +46,51 @@ export const LanguageService = {
     }
   },
 
-  //   async updateLanguageRow(input: UpdateLanguageInput): Promise<Response> {
-  //     try {
-  //       const params: HandleLanguageMutationVariables = {
-  //         input: {
-  //           ...input,
-  //           action: 'update',
-  //         },
-  //       }
+  async update(input: UpdateLanguageInput): Promise<APIResponse<LanguageItem>> {
+    try {
+      const params: UpdateLanguageItemMutationVariables = {
+        input: {
+          ...input,
+        },
+      }
 
-  //       await AppSyncHelper(Mutations.handleLanguage, params)
+      const { data } = (await AppSyncHelper(updateLanguageItem, params)) as {
+        data: UpdateLanguageItemMutation
+        errors: any[]
+      }
 
-  //       // Updates the code table
-  //       codeTable[input.tableCode][input.itemCode].merge({
-  //         [`${input.languageCode}-text`]: input.text || '',
-  //       })
+      mergeLanguageItemInCodeTable(data.updateLanguageItem as LanguageItem)
 
-  //       return { status: 200 }
-  //     } catch (error) {
-  //       logDev('updateLanguageRow ', error)
-  //       return codeTableErrorHandler(error)
-  //     }
-  //   },
+      return { status: 200, data: data.updateLanguageItem }
+    } catch (error) {
+      return handleError(error, 'LanguageService.updateLanguageRow')
+    }
+  },
 
-  //   async deleteLanguageRow(input: DeleteLanguageInput): Promise<Response> {
-  //     try {
-  //       const params: HandleLanguageMutationVariables = {
-  //         input: {
-  //           ...input,
-  //           action: 'delete',
-  //         },
-  //       }
+  async delete(input: DeleteLanguageInput): Promise<APIResponse<LanguageItem>> {
+    try {
+      const params: DeleteLanguageItemMutationVariables = {
+        input: {
+          ...input,
+        },
+      }
 
-  //       await AppSyncHelper(Mutations.handleLanguage, params)
+      const { data } = (await AppSyncHelper(deleteLanguageItem, params)) as {
+        data: DeleteLanguageItemMutation
+        errors: any[]
+      }
 
-  //       // Updates the code table
-  //       codeTable[input.tableCode][input.itemCode].merge({
-  //         [`${input.languageCode}-text`]: none,
-  //       })
+      const languageItem = data.deleteLanguageItem
 
-  //       return { status: 200 }
-  //     } catch (error) {
-  //       logDev('Delete Language Row ', error)
-  //       return codeTableErrorHandler(error)
-  //     }
-  //   },
+      if (languageItem) {
+        removeLanguageItemInCodeTable(languageItem)
+      }
+
+      return { status: 200, data: languageItem }
+    } catch (error) {
+      return handleError(error, 'LanguageService.deleteLanguageRow')
+    }
+  },
 }
 
 export const mergeLanguageItemInCodeTable = (languageItem: LanguageItem) => {
@@ -95,4 +100,10 @@ export const mergeLanguageItemInCodeTable = (languageItem: LanguageItem) => {
   codeTableState[tableCode][itemCode].label.merge({
     [languageCode]: text,
   })
+}
+
+export const removeLanguageItemInCodeTable = (languageItem: LanguageItem) => {
+  const { languageCode, tableCode, itemCode } = languageItem
+
+  codeTableState[tableCode][itemCode].label[languageCode].set(none)
 }
